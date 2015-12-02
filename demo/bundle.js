@@ -51,6 +51,10 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
@@ -134,6 +138,71 @@
 	  )
 	), document.getElementById('react2'));
 
+	var DynamicDemo = (function (_React$Component) {
+	  _inherits(DynamicDemo, _React$Component);
+
+	  function DynamicDemo() {
+	    _classCallCheck(this, DynamicDemo);
+
+	    _React$Component.call(this);
+	    this.state = {
+	      arr: [998, 225, 13]
+	    };
+	    this._sortableKey = 0;
+	  }
+
+	  DynamicDemo.prototype.handleAddElement = function handleAddElement() {
+	    this._sortableKey++;
+	    this.setState({
+	      arr: this.state.arr.concat(Math.round(Math.random() * 1000))
+	    });
+	  };
+
+	  DynamicDemo.prototype.handleRemoveElement = function handleRemoveElement(index) {
+	    var newArr = this.state.arr.slice();
+	    newArr.splice(index, 1);
+	    this._sortableKey++;
+
+	    this.setState({
+	      arr: newArr
+	    });
+	  };
+
+	  DynamicDemo.prototype.render = function render() {
+	    var _this = this;
+
+	    return _react2['default'].createElement(
+	      'div',
+	      { className: 'dynamic-demo' },
+	      _react2['default'].createElement(
+	        'button',
+	        { onClick: this.handleAddElement.bind(this) },
+	        'Add 1 element'
+	      ),
+	      _react2['default'].createElement(
+	        _srcIndexJs2['default'],
+	        { key: this._sortableKey },
+	        this.state.arr.map(function (num, index) {
+	          return _react2['default'].createElement(
+	            _DemoItemJs2['default'],
+	            { key: 'index', className: 'dynamic-item' },
+	            num,
+	            _react2['default'].createElement(
+	              'span',
+	              { className: 'delete', onMouseDown: _this.handleRemoveElement.bind(_this, index) },
+	              '×'
+	            )
+	          );
+	        })
+	      )
+	    );
+	  };
+
+	  return DynamicDemo;
+	})(_react2['default'].Component);
+
+	_reactDom2['default'].render(_react2['default'].createElement(DynamicDemo, null), document.getElementById('react3'));
+
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
@@ -183,6 +252,7 @@
 	});
 
 	React.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOM;
+	React.__SECRET_DOM_SERVER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOMServer;
 
 	module.exports = React;
 
@@ -10538,6 +10608,7 @@
 	    multiple: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
 	    muted: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
 	    name: null,
+	    nonce: MUST_USE_ATTRIBUTE,
 	    noValidate: HAS_BOOLEAN_VALUE,
 	    open: HAS_BOOLEAN_VALUE,
 	    optimum: null,
@@ -10549,6 +10620,7 @@
 	    readOnly: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
 	    rel: null,
 	    required: HAS_BOOLEAN_VALUE,
+	    reversed: HAS_BOOLEAN_VALUE,
 	    role: MUST_USE_ATTRIBUTE,
 	    rows: MUST_USE_ATTRIBUTE | HAS_POSITIVE_NUMERIC_VALUE,
 	    rowSpan: null,
@@ -16387,7 +16459,7 @@
 	        start: input.selectionStart,
 	        end: input.selectionEnd
 	      };
-	    } else if (document.selection && (input.nodeName && input.nodeName.toLowerCase() === 'input')) {
+	    } else if (document.selection && input.nodeName && input.nodeName.toLowerCase() === 'input') {
 	      // IE8 input.
 	      var range = document.selection.createRange();
 	      // There can only be one selection per document in IE, so it must
@@ -16422,7 +16494,7 @@
 	    if ('selectionStart' in input) {
 	      input.selectionStart = start;
 	      input.selectionEnd = Math.min(end, input.value.length);
-	    } else if (document.selection && (input.nodeName && input.nodeName.toLowerCase() === 'input')) {
+	    } else if (document.selection && input.nodeName && input.nodeName.toLowerCase() === 'input') {
 	      var range = input.createTextRange();
 	      range.collapse(true);
 	      range.moveStart('character', start);
@@ -18751,7 +18823,7 @@
 
 	'use strict';
 
-	module.exports = '0.14.2';
+	module.exports = '0.14.3';
 
 /***/ },
 /* 147 */
@@ -20189,7 +20261,6 @@
 	exports.isFunction = isFunction;
 	exports.isNumeric = isNumeric;
 	exports.position = position;
-	exports.offset = offset;
 	exports.width = width;
 	exports.height = height;
 	exports.outerWidthWithMargin = outerWidthWithMargin;
@@ -20235,21 +20306,6 @@
 	  return {
 	    left: el.offsetLeft,
 	    top: el.offsetTop
-	  };
-	}
-
-	function offset(el) {
-	  if (!el) {
-	    return {
-	      left: 0,
-	      top: 0
-	    };
-	  }
-
-	  var rect = el.getBoundingClientRect();
-	  return {
-	    top: rect.top + document.body.scrollTop,
-	    left: rect.left + document.body.scrollLeft
 	  };
 	}
 
@@ -20363,8 +20419,8 @@
 	    return {
 	      sortableClassName: '',
 	      sortableStyle: {},
-	      onSortableItemMount: function onSortableItemMount() {},
-	      onSortableItemReadyToMove: function onSortableItemReadyToMove() {}
+	      onSortableItemMount: null,
+	      onSortableItemReadyToMove: null
 	    };
 	  },
 
@@ -20389,12 +20445,18 @@
 	        e.returnValue = false;
 	      }
 	    });
-	    this.props.onSortableItemMount(_utils.position(node), _utils.width(node), _utils.height(node), _utils.outerWidthWithMargin(node), _utils.outerHeightWithMargin(node), this.props.sortableIndex);
+
+	    if (_utils.isFunction(this.props.onSortableItemMount)) {
+	      this.props.onSortableItemMount(_utils.position(node), _utils.width(node), _utils.height(node), _utils.outerWidthWithMargin(node), _utils.outerHeightWithMargin(node), this.props.sortableIndex);
+	    }
 	  },
 
 	  componentDidUpdate: function componentDidUpdate() {
 	    var node = _reactDom2['default'].findDOMNode(this);
-	    this.props.onSortableItemMount(_utils.position(node), _utils.width(node), _utils.height(node), _utils.outerWidthWithMargin(node), _utils.outerHeightWithMargin(node), this.props.sortableIndex);
+
+	    if (_utils.isFunction(this.props.onSortableItemMount)) {
+	      this.props.onSortableItemMount(_utils.position(node), _utils.width(node), _utils.height(node), _utils.outerWidthWithMargin(node), _utils.outerHeightWithMargin(node), this.props.sortableIndex);
+	    }
 	  },
 
 	  renderWithSortable: function renderWithSortable(item) {
