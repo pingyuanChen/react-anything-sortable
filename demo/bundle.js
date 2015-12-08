@@ -203,6 +203,26 @@
 
 	_reactDom2['default'].render(_react2['default'].createElement(DynamicDemo, null), document.getElementById('react3'));
 
+	_reactDom2['default'].render(_react2['default'].createElement(
+	  _srcIndexJs2['default'],
+	  { className: 'containment-demo', containment: true },
+	  _react2['default'].createElement(
+	    _DemoItemJs2['default'],
+	    { className: 'item-1', sortData: 'react', key: 1 },
+	    'React'
+	  ),
+	  _react2['default'].createElement(
+	    _DemoItemJs2['default'],
+	    { className: 'item-2', sortData: 'angular', key: 2 },
+	    'Angular'
+	  ),
+	  _react2['default'].createElement(
+	    _DemoItemJs2['default'],
+	    { className: 'item-3', sortData: 'backbone', key: 3 },
+	    'Backbone'
+	  )
+	), document.getElementById('react4'));
+
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
@@ -19840,8 +19860,9 @@
 	     *   //dataSet sorted
 	     * }
 	     */
-	    onSort: _react2['default'].PropTypes.func,
-	    className: _react2['default'].PropTypes.string
+	    onSort: _react.PropTypes.func,
+	    className: _react.PropTypes.string,
+	    containment: _react.PropTypes.bool
 	  },
 
 	  getInitialState: function getInitialState() {
@@ -19865,8 +19886,14 @@
 	    };
 	  },
 
-	  componentDidMount: function componentDidMount() {
-	    this.containerWidth = _reactDom2['default'].findDOMNode(this).offsetWidth;
+	  componentDidUpdate: function componentDidUpdate() {
+	    var container = _reactDom2['default'].findDOMNode(this);
+	    var rect = container.getBoundingClientRect();
+
+	    this._top = rect.top + document.body.scrollTop;
+	    this._left = rect.left + document.body.scrollLeft;
+	    this._bottom = this._top + rect.height;
+	    this._right = this._left + rect.width;
 	  },
 
 	  componentWillUnmount: function componentWillUnmount() {
@@ -19967,6 +19994,15 @@
 	    if (!this._hasInitDragging) {
 	      this._dimensionArr[this._draggingIndex].isPlaceHolder = true;
 	      this._hasInitDragging = false;
+	    }
+
+	    if (this.props.containment) {
+	      var x = e.pageX || e.clientX;
+	      var y = e.pageY || e.clientY;
+
+	      if (x < this._left || x > this._right || y < this._top || y > this._bottom) {
+	        return false;
+	      }
 	    }
 
 	    var newOffset = this.calculateNewOffset(e);
