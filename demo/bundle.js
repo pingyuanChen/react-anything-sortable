@@ -151,6 +151,13 @@
 	    this._sortableKey = 0;
 	  }
 
+	  DynamicDemo.prototype.handleSort = function handleSort(sortedArray) {
+	    this._sortableKey++;
+	    this.setState({
+	      arr: sortedArray
+	    });
+	  };
+
 	  DynamicDemo.prototype.handleAddElement = function handleAddElement() {
 	    this._sortableKey++;
 	    this.setState({
@@ -181,11 +188,11 @@
 	      ),
 	      _react2['default'].createElement(
 	        _srcIndexJs2['default'],
-	        { key: this._sortableKey },
+	        { key: this._sortableKey, onSort: this.handleSort.bind(this) },
 	        this.state.arr.map(function (num, index) {
 	          return _react2['default'].createElement(
 	            _DemoItemJs2['default'],
-	            { key: 'index', className: 'dynamic-item' },
+	            { key: 'index', className: 'dynamic-item', sortData: num },
 	            num,
 	            _react2['default'].createElement(
 	              'span',
