@@ -71,11 +71,15 @@
 
 	var _DemoItemJs2 = _interopRequireDefault(_DemoItemJs);
 
-	var _ImageItemJs = __webpack_require__(163);
+	var _DemoHOCItemJs = __webpack_require__(163);
+
+	var _DemoHOCItemJs2 = _interopRequireDefault(_DemoHOCItemJs);
+
+	var _ImageItemJs = __webpack_require__(164);
 
 	var _ImageItemJs2 = _interopRequireDefault(_ImageItemJs);
 
-	var _ActionItemJs = __webpack_require__(164);
+	var _ActionItemJs = __webpack_require__(165);
 
 	var _ActionItemJs2 = _interopRequireDefault(_ActionItemJs);
 
@@ -83,17 +87,17 @@
 	  _srcIndexJs2['default'],
 	  { onSort: handleSort, className: 'style-for-test' },
 	  _react2['default'].createElement(
-	    _DemoItemJs2['default'],
+	    _DemoHOCItemJs2['default'],
 	    { className: 'item-1', sortData: 'react', key: 1 },
 	    'React'
 	  ),
 	  _react2['default'].createElement(
-	    _DemoItemJs2['default'],
+	    _DemoHOCItemJs2['default'],
 	    { className: 'item-2', sortData: 'angular', key: 2 },
 	    'Angular'
 	  ),
 	  _react2['default'].createElement(
-	    _DemoItemJs2['default'],
+	    _DemoHOCItemJs2['default'],
 	    { className: 'item-3', sortData: 'backbone', key: 3 },
 	    'Backbone'
 	  )
@@ -176,7 +180,18 @@
 	  };
 
 	  DynamicDemo.prototype.render = function render() {
-	    var _this = this;
+	    function renderItem(num, index) {
+	      return _react2['default'].createElement(
+	        _DemoItemJs2['default'],
+	        { key: index, className: 'dynamic-item', sortData: num },
+	        num,
+	        _react2['default'].createElement(
+	          'span',
+	          { className: 'delete', onMouseDown: this.handleRemoveElement.bind(this, index) },
+	          '×'
+	        )
+	      );
+	    }
 
 	    return _react2['default'].createElement(
 	      'div',
@@ -189,18 +204,7 @@
 	      _react2['default'].createElement(
 	        _srcIndexJs2['default'],
 	        { key: this._sortableKey, onSort: this.handleSort.bind(this) },
-	        this.state.arr.map(function (num, index) {
-	          return _react2['default'].createElement(
-	            _DemoItemJs2['default'],
-	            { key: 'index', className: 'dynamic-item', sortData: num },
-	            num,
-	            _react2['default'].createElement(
-	              'span',
-	              { className: 'delete', onMouseDown: _this.handleRemoveElement.bind(_this, index) },
-	              '×'
-	            )
-	          );
-	        })
+	        this.state.arr.map(renderItem, this)
 	      )
 	    );
 	  };
@@ -20000,7 +20004,7 @@
 
 	    if (!this._hasInitDragging) {
 	      this._dimensionArr[this._draggingIndex].isPlaceHolder = true;
-	      this._hasInitDragging = false;
+	      this._hasInitDragging = true;
 	    }
 
 	    if (this.props.containment) {
@@ -20174,7 +20178,7 @@
 	    // Since `mousemove` is listened on document, when cursor move too fast,
 	    // `e.target` may be `body` or some other stuff instead of
 	    // `.ui-sortable-item`
-	    var target = _utils.get('.ui-sortable-dragging');
+	    var target = _utils.closest(e.target || e.srcElement, '.ui-sortable-item') || _utils.get('.ui-sortable-dragging');
 	    var offset = _utils.position(target);
 
 	    var deltaX = Math.abs(this._prevX - (e.pageX || e.clientX));
@@ -20283,7 +20287,8 @@
 	  }
 	});
 
-	Sortable.SortableItemMixin = _SortableItemMixin2['default'];
+	Sortable.SortableItemMixin = _SortableItemMixin2['default']();
+	Sortable.sortable = _SortableItemMixin2['default'];
 
 	exports['default'] = Sortable;
 	module.exports = exports['default'];
@@ -20442,7 +20447,17 @@
 
 	exports.__esModule = true;
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var _react = __webpack_require__(1);
 
@@ -20454,64 +20469,127 @@
 
 	var _utils = __webpack_require__(160);
 
-	/**
-	 * @class SortableItemMixin
-	 */
-	exports['default'] = {
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      sortableClassName: '',
-	      sortableStyle: {},
-	      onSortableItemMount: null,
-	      onSortableItemReadyToMove: null
-	    };
-	  },
+	function _handleSortableItemReadyToMove(e) {
+	  var target = _utils.closest(e.target || e.srcElement, '.ui-sortable-item');
+	  var evt = {
+	    pageX: e.pageX || e.clientX || e.touches[0].pageX,
+	    pageY: e.pageY || e.clientY || e.touches[0].pageY,
+	    offset: _utils.position(target)
+	  };
 
-	  handleSortableItemReadyToMove: function handleSortableItemReadyToMove(e) {
-	    var target = _utils.closest(e.target || e.srcElement, '.ui-sortable-item');
-	    var evt = {
-	      pageX: e.pageX || e.clientX || e.touches[0].pageX,
-	      pageY: e.pageY || e.clientY || e.touches[0].pageY,
-	      offset: _utils.position(target)
-	    };
-
+	  if (this.props.onSortableItemReadyToMove) {
 	    this.props.onSortableItemReadyToMove(evt, this.props.sortableIndex);
-	  },
-
-	  componentDidMount: function componentDidMount() {
-	    var node = _reactDom2['default'].findDOMNode(this);
-
-	    _utils.on(node, 'selectstart', function (e) {
-	      if (e.preventDefault) {
-	        e.preventDefault();
-	      } else {
-	        e.returnValue = false;
-	      }
-	    });
-
-	    if (_utils.isFunction(this.props.onSortableItemMount)) {
-	      this.props.onSortableItemMount(_utils.position(node), _utils.width(node), _utils.height(node), _utils.outerWidthWithMargin(node), _utils.outerHeightWithMargin(node), this.props.sortableIndex);
-	    }
-	  },
-
-	  componentDidUpdate: function componentDidUpdate() {
-	    var node = _reactDom2['default'].findDOMNode(this);
-
-	    if (_utils.isFunction(this.props.onSortableItemMount)) {
-	      this.props.onSortableItemMount(_utils.position(node), _utils.width(node), _utils.height(node), _utils.outerWidthWithMargin(node), _utils.outerHeightWithMargin(node), this.props.sortableIndex);
-	    }
-	  },
-
-	  renderWithSortable: function renderWithSortable(item) {
-	    return _react2['default'].cloneElement(item, {
-	      className: this.props.sortableClassName,
-	      style: this.props.sortableStyle,
-	      key: this.props.sortableIndex,
-	      onMouseDown: this.handleSortableItemReadyToMove,
-	      onTouchStart: this.handleSortableItemReadyToMove
-	    });
 	  }
+	}
+
+	function handleComponentDidMount() {
+	  var node = _reactDom2['default'].findDOMNode(this);
+
+	  _utils.on(node, 'selectstart', function (e) {
+	    if (e.preventDefault) {
+	      e.preventDefault();
+	    } else {
+	      e.returnValue = false;
+	    }
+	  });
+
+	  if (_utils.isFunction(this.props.onSortableItemMount)) {
+	    this.props.onSortableItemMount(_utils.position(node), _utils.width(node), _utils.height(node), _utils.outerWidthWithMargin(node), _utils.outerHeightWithMargin(node), this.props.sortableIndex);
+	  }
+	}
+
+	function handleComponentDidUpdate() {
+	  var node = _reactDom2['default'].findDOMNode(this);
+
+	  if (_utils.isFunction(this.props.onSortableItemMount)) {
+	    this.props.onSortableItemMount(_utils.position(node), _utils.width(node), _utils.height(node), _utils.outerWidthWithMargin(node), _utils.outerHeightWithMargin(node), this.props.sortableIndex);
+	  }
+	}
+
+	var _defaultProps = {
+	  sortableClassName: '',
+	  sortableStyle: {},
+	  onSortableItemMount: function onSortableItemMount() {},
+	  onSortableItemReadyToMove: function onSortableItemReadyToMove() {}
 	};
+
+	/**
+	 * @class A factory for generating either mixin or High Order Component
+	 *        depending if there is a argument passed in
+	 *
+	 * @param {React} Component An optinal argument for creating HOCs, leave it
+	 *                blank if you'd like old mixin
+	 */
+
+	exports['default'] = function (Component) {
+	  if (Component) {
+	    return (function (_React$Component) {
+	      _inherits(SortableItem, _React$Component);
+
+	      function SortableItem() {
+	        _classCallCheck(this, SortableItem);
+
+	        _React$Component.apply(this, arguments);
+	      }
+
+	      SortableItem.prototype.handleSortableItemReadyToMove = function handleSortableItemReadyToMove(e) {
+	        _handleSortableItemReadyToMove.call(this, e);
+	      };
+
+	      SortableItem.prototype.componentDidMount = function componentDidMount() {
+	        handleComponentDidMount.call(this);
+	      };
+
+	      SortableItem.prototype.componentDidUpdate = function componentDidUpdate() {
+	        handleComponentDidUpdate.call(this);
+	      };
+
+	      SortableItem.prototype.render = function render() {
+	        var _props = this.props;
+	        var sortableClassName = _props.sortableClassName;
+	        var sortableStyle = _props.sortableStyle;
+	        var sortableIndex = _props.sortableIndex;
+
+	        var rest = _objectWithoutProperties(_props, ['sortableClassName', 'sortableStyle', 'sortableIndex']);
+
+	        return _react2['default'].createElement(Component, _extends({}, rest, { className: sortableClassName, style: sortableStyle, key: sortableIndex,
+	          onMouseDown: this.handleSortableItemReadyToMove.bind(this),
+	          onTouchStart: this.handleSortableItemReadyToMove.bind(this) }));
+	      };
+
+	      _createClass(SortableItem, null, [{
+	        key: 'defaultProps',
+	        value: _defaultProps,
+	        enumerable: true
+	      }]);
+
+	      return SortableItem;
+	    })(_react2['default'].Component);
+	  }
+
+	  return {
+	    getDefaultProps: function getDefaultProps() {
+	      return _defaultProps;
+	    },
+
+	    handleSortableItemReadyToMove: _handleSortableItemReadyToMove,
+
+	    componentDidMount: handleComponentDidMount,
+
+	    componentDidUpdate: handleComponentDidUpdate,
+
+	    renderWithSortable: function renderWithSortable(item) {
+	      return _react2['default'].cloneElement(item, {
+	        className: this.props.sortableClassName,
+	        style: this.props.sortableStyle,
+	        key: this.props.sortableIndex,
+	        onMouseDown: this.handleSortableItemReadyToMove,
+	        onTouchStart: this.handleSortableItemReadyToMove
+	      });
+	    }
+	  };
+	};
+
 	module.exports = exports['default'];
 
 /***/ },
@@ -20560,6 +20638,51 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _srcIndexJs = __webpack_require__(159);
+
+	var DemoHOCItem = (function (_React$Component) {
+	  _inherits(DemoHOCItem, _React$Component);
+
+	  function DemoHOCItem() {
+	    _classCallCheck(this, _DemoHOCItem);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  DemoHOCItem.prototype.render = function render() {
+	    return _react2['default'].createElement(
+	      'div',
+	      this.props,
+	      this.props.children
+	    );
+	  };
+
+	  var _DemoHOCItem = DemoHOCItem;
+	  DemoHOCItem = _srcIndexJs.sortable(DemoHOCItem) || DemoHOCItem;
+	  return DemoHOCItem;
+	})(_react2['default'].Component);
+
+	exports['default'] = DemoHOCItem;
+	module.exports = exports['default'];
+
+/***/ },
+/* 164 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	exports.__esModule = true;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
@@ -20583,7 +20706,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 164 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
