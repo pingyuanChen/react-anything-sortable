@@ -7,20 +7,21 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Sortable from '../src/index.js';
 import Item from './DemoItem.js';
+import DemoHOCItem from './DemoHOCItem.js';
 import ImageItem from './ImageItem.js';
 import ActionItem from './ActionItem.js';
 
 ReactDOM.render(
   <Sortable onSort={handleSort} className="style-for-test">
-    <Item className="item-1" sortData="react" key={1}>
+    <DemoHOCItem className="item-1" sortData="react" key={1}>
       React
-    </Item>
-    <Item className="item-2" sortData="angular" key={2}>
+    </DemoHOCItem>
+    <DemoHOCItem className="item-2" sortData="angular" key={2}>
       Angular
-    </Item>
-    <Item className="item-3" sortData="backbone" key={3}>
+    </DemoHOCItem>
+    <DemoHOCItem className="item-3" sortData="backbone" key={3}>
       Backbone
-    </Item>
+    </DemoHOCItem>
   </Sortable>
 , document.getElementById('react'));
 
@@ -88,18 +89,20 @@ class DynamicDemo extends React.Component {
   }
 
   render() {
+    function renderItem(num, index) {
+      return (
+        <Item key={index} className="dynamic-item" sortData={num}>
+          {num}
+          <span className="delete" onMouseDown={this.handleRemoveElement.bind(this, index)}>&times;</span>
+        </Item>
+      );
+    }
+
     return (
       <div className="dynamic-demo">
         <button onClick={::this.handleAddElement}>Add 1 element</button>
         <Sortable key={this._sortableKey} onSort={::this.handleSort}>
-          {this.state.arr.map((num, index) => {
-            return (
-              <Item key="index" className="dynamic-item" sortData={num}>
-                {num}
-                <span className="delete" onMouseDown={this.handleRemoveElement.bind(this, index)}>&times;</span>
-              </Item>
-            );
-          })}
+          {this.state.arr.map(renderItem, this)}
         </Sortable>
       </div>
     );

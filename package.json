@@ -1,6 +1,6 @@
 {
   "name": "react-anything-sortable",
-  "version": "1.2.0",
+  "version": "1.3.2",
   "description": "A ReactJS component that can drag and sort any children with IE8 compatibility",
   "main": "lib/index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "NODE_ENV=production ./node_modules/.bin/webpack --config webpack.conf.js",
     "test": "./node_modules/karma/bin/karma start test/karma.conf.js",
     "demo": "./node_modules/.bin/webpack demo/index.js demo/bundle.js --progress --devtoll source-map --module-bind 'js=babel?stage=0&loose=all'",
-    "demo-watch": "./node_modules/.bin/webpack demo/index.js -w demo/bundle.js --progress -d --module-bind 'js=babel?stage=0&loose=all'"
+    "demo:watch": "./node_modules/.bin/webpack demo/index.js -w demo/bundle.js --progress -d --module-bind 'js=babel?stage=0&loose=all'"
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,6 @@
     "chai-spies": "^0.5.1",
     "istanbul-instrumenter-loader": "~0.1.3",
     "karma": "^0.13.3",
-    "karma-browserify": "^4.1.2",
     "karma-chai": "^0.1.0",
     "karma-coverage": "^0.5.0",
     "karma-coveralls": "^1.1.2",

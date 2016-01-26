@@ -45,33 +45,34 @@ In `app.js`
 ````
 var ReactDOM = require('react-dom');
 var Sortable = require('react-anything-sortable');
-var YourSortableItem = require('./YourItem');
+var SortableItem = require('./SortableItem');
 
 ReactDOM.render(
 <Sortable onSort={handleSort}>
-  <YourItem sortData="1" />
-  <YourItem sortData="2" />
+  <SortableItem sortData="1" />
+  <SortableItem sortData="2" />
 </Sortable>
 , document.body);
 ````
 
-and in `YourItem.js`
+and in `SortableItem.js`
 
-ES 6 `import` is recommended
+A modern usage would be
 
 ```
 import React from 'react';
-import {SortableItemMixin} from 'react-anything-sortable';
+import { sortable } from 'react-anything-sortable';
 
-const YourItem = React.createClass({
-  mixins: [SortableItemMixin],
-
+@sortable
+class SortableItem extends React.Component {
   render() {
-    return this.renderWithSortable(     // <= this.renderWithSortable is important
-      <div>your item</div>
+    return (
+      <div {...this.props}>      // <-- make sure destructure props to your own item,
+        your item                //     it contains required `className`s and
+      </div>                     //     event handlers
     );
   }
-});
+};
 ```
 
 Or if you favor the old fashion way
@@ -80,11 +81,11 @@ Or if you favor the old fashion way
 var React = require('react');
 var SortableItemMixin = require('react-anything-sortable').SortableItemMixin;
 
-var YourItem = React.createClass({
+var SortableItem = React.createClass({
   mixins: [SortableItemMixin],
 
   render: function(){
-    return this.renderWithSortable(
+    return this.renderWithSortable(  // <-- this.renderWithSortable call is essential
       <div>your item</div>
     );
   }
@@ -120,7 +121,7 @@ Will be returned by `onSort` callback in the form of array.
 ## Notice
 
 1. Specify your style for `Sortable` and `Sortable Items`, check `demo/style.css`, **it is NOT optional!**
-2. Don't forget the `this.renderWithSortable` call in `YourItem.js`
+2. Don't forget the `this.renderWithSortable` call in `SortableItem`
 3. Since we can't track any children modification in `Sortable`, you have to use `key` to force update `Sortable` when adding/removing children.
 
 
@@ -131,7 +132,7 @@ $ npm run test
 $ npm run watch
 $ npm run build
 $ npm run demo
-$ npm run demo-watch
+$ npm run demo:watch
 ```
 
 
