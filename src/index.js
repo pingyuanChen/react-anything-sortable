@@ -56,6 +56,27 @@ const Sortable = React.createClass({
     };
   },
 
+  componentWillReceiveProps(nextProps){
+    //keep tracking the dimension and coordinates of all children
+    this._dimensionArr = this.props.children ? Array.isArray(this.props.children) ? this.props.children.map(function () {
+      return {};
+    }) : [{}] : [];
+
+    //keep tracking the order of all children
+    this._orderArr = [];
+    var i = 0;
+    while (i < this._dimensionArr.length) {
+      this._orderArr.push(i++);
+    }
+
+    this.setState({
+      isDragging: false,
+      placeHolderIndex: null,
+      left: null,
+      top: null
+    });
+  },
+
   componentDidUpdate() {
     const container = ReactDOM.findDOMNode(this);
     const rect = container.getBoundingClientRect();
@@ -413,7 +434,7 @@ const Sortable = React.createClass({
       const itemClassName = `ui-sortable-item ${isPlaceHolder && 'ui-sortable-placeholder'} ${this.state.isDragging && isPlaceHolder && 'visible'}`;
 
       return React.cloneElement(item, {
-        key: index,
+        key: item.key || index,
         sortableClassName: `${item.props.className} ${itemClassName}`,
         sortableIndex: index,
         onSortableItemReadyToMove: isPlaceHolder ? undefined : (e) => {
