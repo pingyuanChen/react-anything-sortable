@@ -85,14 +85,17 @@ const Sortable = React.createClass({
     });
   },
 
-  componentDidUpdate() {
+  componentDidMount(){
     const container = ReactDOM.findDOMNode(this);
-    const rect = container.getBoundingClientRect();
+    let timeoutId;
+    on(container, 'scroll', function(){
+      if(timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(this._resetContainerState, 200);
+    }.bind(this));
+  },
 
-    this._top = rect.top + document.body.scrollTop;
-    this._left = rect.left + document.body.scrollLeft;
-    this._bottom = this._top + rect.height;
-    this._right = this._left + rect.width;
+  componentDidUpdate() {
+    this._resetContainerState();
   },
 
   componentWillUnmount() {
@@ -199,13 +202,23 @@ const Sortable = React.createClass({
 
     const newOffset = this.calculateNewOffset(e);
     const newIndex = this.calculateNewIndex(e);
+    const container = ReactDOM.findDOMNode(this);
+    const maxLeft = container.clientWidth - this._dimensionArr[newIndex].width - 50;
+    let newLeft;
+    console.log(newOffset.deltaX);
+    if(newOffset.left > maxLeft){
+      newLeft = maxLeft;
+      container.scrollLeft = container.scrollLeft + Math.abs(newOffset.deltaX);
+    }else{
+      newLeft = newOffset.left;
+    }
 
     this._draggingIndex = newIndex;
 
     this.setState({
       isDragging: true,
       top: newOffset.top,
-      left: newOffset.left,
+      left: newLeft,
       placeHolderIndex: newIndex
     });
 
@@ -334,12 +347,23 @@ const Sortable = React.createClass({
     return arr;
   },
 
+  _resetContainerState(){
+    const container = ReactDOM.findDOMNode(this);
+    const rect = container.getBoundingClientRect();
+
+    this._top = rect.top + document.body.scrollTop;
+    this._left = rect.left + document.body.scrollLeft;
+    this._bottom = this._top + rect.height;
+    this._right = this._left + rect.width;
+  },
+
   /**
    * calculate new offset
    * @param  {object} e MouseMove event
    * @return {object}   {left: 1, top: 1}
    */
   calculateNewOffset(e) {
+    const container = ReactDOM.findDOMNode(this);
     const deltaX = this._prevX - (e.pageX || e.clientX);
     const deltaY = this._prevY - (e.pageY || e.clientY);
 
@@ -350,7 +374,8 @@ const Sortable = React.createClass({
 
     return {
       left: newLeft,
-      top: newTop
+      top: newTop,
+      deltaX: deltaX
     };
   },
 
