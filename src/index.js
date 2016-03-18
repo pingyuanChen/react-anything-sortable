@@ -69,6 +69,14 @@ const Sortable = React.createClass({
       this._orderArr.push(i++);
     }
 
+    //reset temp lets
+    this._draggingIndex = null;
+    this._isReadyForDragging = false;
+    this._isMouseMoving = false;
+    this._initOffset = null;
+    this._prevX = null;
+    this._prevY = null;
+    
     this.setState({
       isDragging: false,
       placeHolderIndex: null,
