@@ -205,7 +205,6 @@ const Sortable = React.createClass({
     const container = ReactDOM.findDOMNode(this);
     const maxLeft = container.clientWidth - this._dimensionArr[newIndex].width - 50;
     let newLeft;
-    console.log(newOffset.deltaX);
     if(newOffset.left > maxLeft){
       newLeft = maxLeft;
       container.scrollLeft = container.scrollLeft + Math.abs(newOffset.deltaX);
