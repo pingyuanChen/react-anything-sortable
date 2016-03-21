@@ -32,7 +32,8 @@ const Sortable = React.createClass({
      */
     onSort: PropTypes.func,
     className: PropTypes.string,
-    containment: PropTypes.bool
+    containment: PropTypes.bool,
+    disableVertical: PropTypes.bool
   },
 
   getInitialState() {
@@ -200,24 +201,40 @@ const Sortable = React.createClass({
       }
     }
 
+    const container = ReactDOM.findDOMNode(this);
     const newOffset = this.calculateNewOffset(e);
     const newIndex = this.calculateNewIndex(e);
-    const container = ReactDOM.findDOMNode(this);
-    const maxLeft = container.clientWidth - this._dimensionArr[newIndex].width - 50;
-    let newLeft;
-    if(newOffset.left > maxLeft){
-      newLeft = maxLeft;
-      container.scrollLeft = container.scrollLeft + Math.abs(newOffset.deltaX);
-    }else{
-      newLeft = newOffset.left;
+    let scrollLeft,
+      left = newOffset.left,
+      distance, totalWidth, maxScrollLeft, maxLeft,
+      isRightBound = newOffset.left + this._dimensionArr[newIndex].width - container.scrollLeft - container.clientWidth > -1,
+      isLeftBound = container.scrollLeft - newOffset.left > -1;
+
+    if(isRightBound || isLeftBound){ //1px buffer
+      //Need scroll container because of moving to bounding
+      distance = newOffset.deltaX > 0 ? -20 : 20;
+      scrollLeft = container.scrollLeft + distance; 
+      totalWidth = this.getOrderTotalWidth();
+      maxScrollLeft = totalWidth - container.clientWidth;
+      scrollLeft = Math.min(scrollLeft, maxScrollLeft);
+      container.scrollLeft = scrollLeft;
+      if(isRightBound){
+        left = container.scrollLeft + container.clientWidth - this._dimensionArr[newIndex].width;
+      }else{
+        left = container.scrollLeft;
+      }
     }
+    maxLeft = container.scrollLeft + container.clientWidth - this._dimensionArr[newIndex].width;
+    left = Math.min(left, maxLeft);
+    left = Math.max(left, 0);
+    // console.log('scrollLeft:' + container.scrollLeft + ', left:' + left+', maxLeft:'+maxLeft);
 
     this._draggingIndex = newIndex;
 
     this.setState({
       isDragging: true,
       top: newOffset.top,
-      left: newLeft,
+      left: left,
       placeHolderIndex: newIndex
     });
 
@@ -329,6 +346,14 @@ const Sortable = React.createClass({
     return newIndex !== undefined ? newIndex : prevIndex;
   },
 
+  getOrderTotalWidth(){
+    let total = 0;
+    this._dimensionArr.forEach(function(item){
+      total += item.width;
+    });
+    return total;
+  },
+
   /**
    * untility function
    * @param  {array} arr
@@ -362,7 +387,6 @@ const Sortable = React.createClass({
    * @return {object}   {left: 1, top: 1}
    */
   calculateNewOffset(e) {
-    const container = ReactDOM.findDOMNode(this);
     const deltaX = this._prevX - (e.pageX || e.clientX);
     const deltaY = this._prevY - (e.pageY || e.clientY);
 
@@ -488,14 +512,17 @@ const Sortable = React.createClass({
       return;
     }
 
-    const style = {
-      top: this.state.top,
+    let style = {
       left: this.state.left,
       width: this._dimensionArr[this._draggingIndex].width,
       height: this._dimensionArr[this._draggingIndex].height
-    };
+    }, cls = item.props.className || '';
+
+    if(!this.props.disableVertical){
+      style.top = this.state.top;
+    }
     return React.cloneElement(item, {
-      sortableClassName: `${item.props.className} ui-sortable-item ui-sortable-dragging`,
+      sortableClassName: `${cls} ui-sortable-item ui-sortable-dragging`,
       key: this._dimensionArr.length,
       sortableStyle: style,
       isDragging: true
