@@ -95,7 +95,15 @@ const Sortable = React.createClass({
     }.bind(this));
   },
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
+    if(prevState.isDragging === false && this.state.isDragging === true){
+      //drag start
+      this.props.dragStart && this.props.dragStart();
+    }
+    if(prevState.isDragging === true && this.state.isDragging === false){
+      //drag end
+      this.props.dragEnd && this.props.dragEnd();
+    }
     this._resetContainerState();
   },
 
@@ -530,8 +538,13 @@ const Sortable = React.createClass({
   },
 
   render() {
-    const className = 'ui-sortable ' + (this.props.className || '');
-
+    let className = 'ui-sortable';
+    if(this.state.isDragging){
+      className += ' is-dragging';
+    }
+    if(this.props.className){
+      className += ' '+this.props.className;
+    }
     return (
       <div className={className}>
         {this.renderItems()}
