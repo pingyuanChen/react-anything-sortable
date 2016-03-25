@@ -42,7 +42,9 @@ export function position(el) {
 
   return {
     left: el.offsetLeft,
-    top: el.offsetTop
+    top: el.offsetTop,
+    right: el.offsetLeft + el.offsetWidth,
+    bottom: el.offsetTop + el.offsetHeight
   };
 }
 

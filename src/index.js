@@ -320,15 +320,20 @@ const Sortable = React.createClass({
     const _dimensionArr = this._dimensionArr;
     const offsetX = offset.left;
     const offsetY = offset.top;
+    const offsetRight = offset.right;
     const prevIndex = this.state.placeHolderIndex !== null ?
                    this.state.placeHolderIndex :
                    this._draggingIndex;
     let newIndex;
 
     _dimensionArr.every((item, index) => {
-      const relativeLeft = offsetX - item.left;
+      let relativeLeft = offsetX - item.left;
       const relativeTop = offsetY - item.top;
 
+      if(direction === 'right'){
+        //如果是向右拖拽，则以右边界为准
+        relativeLeft = offsetRight - item.left;
+      }
       if (relativeLeft < item.fullWidth && relativeTop < item.fullHeight) {
         if (relativeLeft < item.fullWidth / 2 && direction === 'left') {
           newIndex = index;
@@ -350,7 +355,6 @@ const Sortable = React.createClass({
       }
       return true;
     });
-
     return newIndex !== undefined ? newIndex : prevIndex;
   },
 
