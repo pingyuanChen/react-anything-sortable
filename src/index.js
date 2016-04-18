@@ -502,6 +502,7 @@ const Sortable = React.createClass({
       const itemClassName = `ui-sortable-item ${isPlaceHolder && 'ui-sortable-placeholder'} ${this.state.isDragging && isPlaceHolder && 'visible'}`;
 
       return React.cloneElement(item, {
+        ref: item.ref,
         key: item.key || index,
         sortableClassName: `${item.props.className} ${itemClassName}`,
         sortableIndex: index,
